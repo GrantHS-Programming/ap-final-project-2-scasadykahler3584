@@ -1,11 +1,7 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
+import javax.swing.*;
 import java.util.Random;
-import java.util.Timer;
 
 public class GamePanel extends JPanel implements ActionListener {
     //screen size
@@ -14,7 +10,7 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int UNIT_SIZE = 25;
     static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/UNIT_SIZE;
 
-    //speed
+    //speed of game
     static final int DELAY = 75;
 
     //array of gameboard units
@@ -37,40 +33,86 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer timer;
     Random random;
     GamePanel(){
+        //random initialized
         random = new Random();
         this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
+        //background color
         this.setBackground(Color.black);
         this.setFocusable(true);
+        //action listener
+        this.addKeyListener(new MyKeyAdapter());
+        //startgame method call
+        startGame();
+    }
+    public void startGame(){
+        //newApple called
+        newApple();
+        //switch running from false to true
+        running = true;
+        //timer set
+        timer = new Timer(DELAY,this);
+        timer.start();
+    }
+    public void paintComponent(Graphics g){
+        //calling draw()
+        super.paintComponent(g);
+        draw(g);
+    }
+    public void draw(Graphics g){
+        //possibly temp lines forming grid
+        for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
+            g.drawLine(i*UNIT_SIZE,0,i*UNIT_SIZE,SCREEN_HEIGHT);
+            g.drawLine(0,i*UNIT_SIZE,i*SCREEN_WIDTH,i*UNIT_SIZE);
         }
-        public void startGame(){
-
+        //drawing apple
+        g.setColor(Color.red);
+        g.fillOval(appleX,appleY,UNIT_SIZE,UNIT_SIZE);
+    }
+    public void newApple(){
+        //setting random position of apple
+        appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
+        appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
+    }
+    public void move(){
+        for (int i = bodyparts; i >0 ; i++) {
+            x[i]=x[i-1];
+            y[i]=y[i-1];
         }
-        public void paintComponent(Graphics g){
-
-        }
-        public void draw(Graphics g){
-
-        }
-        public void move(){
-
-        }
-        public void checkApple(){
-
-        }
-        public void checkCollisions(){
-
-        }
-        public void gameOver(Graphics g){
-
-        }
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-        }
-        public class MyKeyAdapter extends KeyAdapter {
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-            }
+        //direction
+        switch (direction){
+            case 'U':
+                y[0]=y[0]-UNIT_SIZE;
+                break;
+            case 'D':
+                y[0]=y[0]+UNIT_SIZE;
+                break;
+            case 'L':
+                x[0]=x[0]-UNIT_SIZE;
+                break;
+            case 'R':
+                x[0]=x[0]+UNIT_SIZE;
+                break;
         }
     }
+    public void checkApple(){
+        //checking if touching apple
+
+    }
+    public void checkCollisions(){
+        //checking if touching self or wall
+
+    }
+    public void gameOver(Graphics g){
+
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
+    public class MyKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+
+        }
+    }
+}
