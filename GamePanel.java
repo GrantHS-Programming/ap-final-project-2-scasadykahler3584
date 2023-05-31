@@ -11,7 +11,7 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/UNIT_SIZE;
 
     //speed of game
-    static final int DELAY = 75;
+    static int DELAY = 75;
 
     //array of gameboard units
     final int[] x = new int[GAME_UNITS];
@@ -60,13 +60,24 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     public void draw(Graphics g){
         //possibly temp lines forming grid
-        for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
-            g.drawLine(i*UNIT_SIZE,0,i*UNIT_SIZE,SCREEN_HEIGHT);
-            g.drawLine(0,i*UNIT_SIZE,i*SCREEN_WIDTH,i*UNIT_SIZE);
-        }
+        //for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
+            //g.drawLine(i*UNIT_SIZE,0,i*UNIT_SIZE,SCREEN_HEIGHT);
+          //  g.drawLine(0,i*UNIT_SIZE,i*SCREEN_WIDTH,i*UNIT_SIZE);
+        //}
         //drawing apple
         g.setColor(Color.red);
         g.fillOval(appleX,appleY,UNIT_SIZE,UNIT_SIZE);
+
+        for (int i = 0; i < bodyparts; i++) {
+            if(i == 0){
+                g.setColor(Color.green);
+                g.fillRect(x[i],y[i],UNIT_SIZE, UNIT_SIZE);
+            }
+            else{
+                g.setColor(new Color(45,180,0));
+                g.fillRect(x[i],y[i],UNIT_SIZE, UNIT_SIZE);
+            }
+        }
     }
     public void newApple(){
         //setting random position of apple
@@ -74,7 +85,7 @@ public class GamePanel extends JPanel implements ActionListener {
         appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
     }
     public void move(){
-        for (int i = bodyparts; i >0 ; i++) {
+        for (int i = bodyparts; i >0 ; i--) {
             x[i]=x[i-1];
             y[i]=y[i-1];
         }
@@ -96,23 +107,74 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     public void checkApple(){
         //checking if touching apple
+        if ((x[0]==appleX) && (y[0]==appleY)){
+            bodyparts++;
+            applesEaten++;
+            newApple();
+            //DELAY--;
+        }
 
     }
     public void checkCollisions(){
         //checking if touching self or wall
-
+        for (int i = bodyparts; i >0 ; i--) {
+            if((x[0]==x[i]) && (y[0]==y[i])){
+                running = false;
+            }
+        }
+        if((x[0]<0)){
+            running=false;
+        }
+        if((x[0] > SCREEN_WIDTH)){
+            running=false;
+        }
+        if((y[0]<0)){
+            running=false;
+        }
+        if((y[0]>SCREEN_HEIGHT)){
+            running=false;
+        }
+        if(!running){
+            timer.stop();
+        }
     }
     public void gameOver(Graphics g){
 
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if(running){
+            move();
+            checkApple();
+            checkCollisions();
+        }
+        repaint();
     }
     public class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-
+            switch (e.getKeyCode()){
+            case KeyEvent.VK_LEFT:
+                if(direction!='R'){
+                    direction='L';
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                if(direction!='L'){
+                    direction='R';
+                }
+                break;
+            case KeyEvent.VK_UP:
+                if(direction!='D'){
+                    direction='U';
+                }
+                break;
+            case KeyEvent.VK_DOWN:
+                if(direction!='U'){
+                    direction='D';
+                }
+                break;
+            }
         }
     }
 }
