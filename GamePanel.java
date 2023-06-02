@@ -3,6 +3,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.Random;
 
+import static java.awt.Font.BOLD;
+
 public class GamePanel extends JPanel implements ActionListener {
     //screen size
     static final int SCREEN_WIDTH = 600;
@@ -28,7 +30,7 @@ public class GamePanel extends JPanel implements ActionListener {
     //starting direction
     char direction = 'R';
 
-    //idk yet *edit later me*
+    //declare running and game timer
     boolean running = false;
     Timer timer;
     Random random;
@@ -60,23 +62,33 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     public void draw(Graphics g){
         //possibly temp lines forming grid
-        //for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
-            //g.drawLine(i*UNIT_SIZE,0,i*UNIT_SIZE,SCREEN_HEIGHT);
-          //  g.drawLine(0,i*UNIT_SIZE,i*SCREEN_WIDTH,i*UNIT_SIZE);
-        //}
-        //drawing apple
-        g.setColor(Color.red);
-        g.fillOval(appleX,appleY,UNIT_SIZE,UNIT_SIZE);
+        /*for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
+            g.drawLine(i*UNIT_SIZE,0,i*UNIT_SIZE,SCREEN_HEIGHT);
+            g.drawLine(0,i*UNIT_SIZE,i*SCREEN_WIDTH,i*UNIT_SIZE);
+        }
+        drawing apple
+        */
+        if(running) {
+            g.setColor(Color.red);
+            g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-        for (int i = 0; i < bodyparts; i++) {
-            if(i == 0){
-                g.setColor(Color.green);
-                g.fillRect(x[i],y[i],UNIT_SIZE, UNIT_SIZE);
+            for (int i = 0; i < bodyparts; i++) {
+                if (i == 0) {
+                    g.setColor(Color.green);
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                } else {
+                    g.setColor(new Color(45, 180, 0));
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                }
             }
-            else{
-                g.setColor(new Color(45,180,0));
-                g.fillRect(x[i],y[i],UNIT_SIZE, UNIT_SIZE);
-            }
+            g.setColor(Color.red);
+            g.setFont(new Font("Ink Free",Font.BOLD,35));
+            FontMetrics metrics = getFontMetrics(g.getFont());
+            g.drawString("Score: "+applesEaten,(SCREEN_WIDTH-metrics.stringWidth("Score: "+applesEaten))/2,g.getFont().getSize());
+
+        }
+        else{
+            gameOver(g);
         }
     }
     public void newApple(){
@@ -120,6 +132,7 @@ public class GamePanel extends JPanel implements ActionListener {
         for (int i = bodyparts; i >0 ; i--) {
             if((x[0]==x[i]) && (y[0]==y[i])){
                 running = false;
+
             }
         }
         if((x[0]<0)){
@@ -139,6 +152,16 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
     public void gameOver(Graphics g){
+        //
+        g.setColor(Color.red);
+        g.setFont(new Font("Ink Free",Font.BOLD,75));
+        FontMetrics metrics = getFontMetrics(g.getFont());
+        g.drawString("Game Over",(SCREEN_WIDTH-metrics.stringWidth("Game Over"))/2,SCREEN_HEIGHT/2);
+        //score
+        g.setColor(Color.red);
+        g.setFont(new Font("Ink Free",Font.BOLD,35));
+        FontMetrics metric = getFontMetrics(g.getFont());
+        g.drawString("Score: "+applesEaten,(SCREEN_WIDTH-metric.stringWidth("Score: "+applesEaten))/2,g.getFont().getSize());
 
     }
     @Override
