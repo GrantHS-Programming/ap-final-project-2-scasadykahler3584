@@ -32,7 +32,8 @@ public class PongPanel extends JPanel{
 
     }
     public void newPaddles(){
-
+        //paddles1 = new Paddles(0,(GAME_HEIGHT/2)-PADDLE_HEIGHT/2),PADDLE_HEIGHT,PADDLE_WIDTH,1);
+        //paddles2 = new Paddles((GAME_WIDTH-PADDLE_WIDTH),(GAME_HEIGHT/2)-PADDLE_HEIGHT/2),PADDLE_HEIGHT,PADDLE_WIDTH,2);
     }
     public void paint(Graphics g){
         image = createImage(getWidth(),getHeight());
@@ -57,7 +58,15 @@ public class PongPanel extends JPanel{
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
         while (true){
-
+            long now = System.nanoTime();
+            delta +=(now-lastTime)/ns;
+            lastTime= now;
+            if(delta>=1){
+                move();
+                checkCollisions();
+                repaint();
+                delta--;
+            }
         }
     }
     public class AL extends KeyAdapter{
